@@ -15,6 +15,12 @@ import getRepositoryInfo from './repository-info.js';
 type ApiOptions = ListGithubDirectoryOptions & {getFullData: true};
 type RepoFile = TreeResponseObject | ContentsReponseObject;
 
+type QueueItem = {
+	url: string;
+	filename?: string;
+	filter?: string;
+};
+
 const sampleUrl = 'https://github.com/mrdoob/three.js/tree/dev/build';
 const blockedWords = /malware|virus|trojan/i;
 const recentStorageKey = 'recent-directory-links';
@@ -22,8 +28,9 @@ const tokenStorageKey = 'token';
 
 const ui = {
 	form: document.querySelector<HTMLFormElement>('#download-form')!,
-	url: document.querySelector<HTMLInputElement>('#url')!,
+	url: document.querySelector<HTMLTextAreaElement>('#url')!,
 	filename: document.querySelector<HTMLInputElement>('#filename')!,
+	filter: document.querySelector<HTMLInputElement>('#filter')!,
 	concurrency: document.querySelector<HTMLSelectElement>('#concurrency')!,
 	tokenPanel: document.querySelector<HTMLDetailsElement>('#token-panel')!,
 	token: document.querySelector<HTMLInputElement>('#token')!,
@@ -32,13 +39,20 @@ const ui = {
 	cancelButton: document.querySelector<HTMLButtonElement>('#cancel-button')!,
 	shareButton: document.querySelector<HTMLButtonElement>('#share-button')!,
 	sampleButton: document.querySelector<HTMLButtonElement>('#sample-button')!,
+	pasteButton: document.querySelector<HTMLButtonElement>('#paste-button')!,
+	addQueueButton: document.querySelector<HTMLButtonElement>('#add-queue')!,
+	clearQueueButton: document.querySelector<HTMLButtonElement>('#clear-queue')!,
 	progress: document.querySelector<HTMLProgressElement>('#progress')!,
 	progressLabel: document.querySelector<HTMLElement>('#progress-label')!,
 	status: document.querySelector<HTMLPreElement>('#status-log')!,
 	statFiles: document.querySelector<HTMLElement>('#stat-files')!,
 	statDownloaded: document.querySelector<HTMLElement>('#stat-downloaded')!,
 	statElapsed: document.querySelector<HTMLElement>('#stat-elapsed')!,
+	statEstimate: document.querySelector<HTMLElement>('#stat-estimate')!,
+	statFailed: document.querySelector<HTMLElement>('#stat-failed')!,
 	recentList: document.querySelector<HTMLUListElement>('#recent-list')!,
+	queueList: document.querySelector<HTMLUListElement>('#queue-list')!,
+	failureList: document.querySelector<HTMLUListElement>('#failure-list')!,
 	clearRecentButton: document.querySelector<HTMLButtonElement>('#clear-recent')!,
 	clearLogButton: document.querySelector<HTMLButtonElement>('#clear-log')!,
 };
@@ -49,6 +63,10 @@ const downloadState = {
 	elapsedTimer: undefined as number | undefined,
 	totalFiles: 0,
 	downloadedFiles: 0,
+	estimatedBytes: 0,
+	failedFiles: [] as string[],
+	queue: [] as QueueItem[],
+	isProcessingQueue: false,
 };
 
 function isError(error: unknown): error is Error {
@@ -118,9 +136,27 @@ function formatElapsed(ms: number): string {
 	return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 }
 
+function formatBytes(bytes: number): string {
+	if (!Number.isFinite(bytes) || bytes <= 0) {
+		return '--';
+	}
+
+	const units = ['B', 'KB', 'MB', 'GB'];
+	let value = bytes;
+	let index = 0;
+	while (value >= 1024 && index < units.length - 1) {
+		value /= 1024;
+		index++;
+	}
+
+	return `${value.toFixed(value >= 100 || index === 0 ? 0 : 1)} ${units[index]}`;
+}
+
 function updateStats() {
 	ui.statFiles.textContent = String(downloadState.totalFiles);
 	ui.statDownloaded.textContent = String(downloadState.downloadedFiles);
+	ui.statEstimate.textContent = formatBytes(downloadState.estimatedBytes);
+	ui.statFailed.textContent = String(downloadState.failedFiles.length);
 	if (downloadState.startedAt === 0) {
 		ui.statElapsed.textContent = '00:00';
 		return;
@@ -152,8 +188,11 @@ function setBusy(isBusy: boolean) {
 	ui.startButton.disabled = isBusy;
 	ui.cancelButton.disabled = !isBusy;
 	ui.sampleButton.disabled = isBusy;
+	ui.pasteButton.disabled = isBusy;
+	ui.addQueueButton.disabled = isBusy;
 	ui.url.disabled = isBusy;
 	ui.filename.disabled = isBusy;
+	ui.filter.disabled = isBusy;
 	ui.concurrency.disabled = isBusy;
 }
 
@@ -168,6 +207,9 @@ function resetSession() {
 	downloadState.totalFiles = 0;
 	downloadState.downloadedFiles = 0;
 	downloadState.startedAt = 0;
+	downloadState.estimatedBytes = 0;
+	downloadState.failedFiles = [];
+	renderFailureList();
 	updateProgress('Idle');
 }
 
@@ -179,6 +221,7 @@ function clearAll(reason?: string) {
 	clearStatus();
 	ui.url.value = '';
 	ui.filename.value = '';
+	ui.filter.value = '';
 	ui.progress.value = 0;
 	ui.progress.max = 1;
 	ui.token.type = 'password';
@@ -188,6 +231,8 @@ function clearAll(reason?: string) {
 	localStorage.removeItem(tokenStorageKey);
 	writeRecentUrls([]);
 	renderRecentUrls();
+	downloadState.queue = [];
+	renderQueue();
 	setBusy(false);
 	if (reason) {
 		addStatus(reason);
@@ -197,7 +242,6 @@ function clearAll(reason?: string) {
 function parseGithubUrl(rawUrl: string): string | undefined {
 	const candidate = rawUrl.trim();
 	if (candidate.length === 0) {
-		addStatus('Enter a GitHub directory URL first.');
 		return;
 	}
 
@@ -209,17 +253,28 @@ function parseGithubUrl(rawUrl: string): string | undefined {
 	try {
 		parsed = new URL(withProtocol);
 	} catch {
-		addStatus('The URL is invalid. Example: https://github.com/owner/repo/tree/main/folder');
 		return;
 	}
 
 	if (!/^(?:www\.)?github\.com$/i.test(parsed.hostname)) {
-		addStatus('Only github.com URLs are supported.');
 		return;
 	}
 
 	parsed.hash = '';
 	return parsed.toString();
+}
+
+function parseUrlList(rawValue: string): string[] {
+	return rawValue
+		.split(/\r?\n|,|\s+/)
+		.map(value => value.trim())
+		.filter(value => value.length > 0)
+		.map(value => parseGithubUrl(value))
+		.filter(value => isNonEmptyString(value));
+}
+
+function isNonEmptyString(value: string | undefined): value is string {
+	return typeof value === 'string' && value.length > 0;
 }
 
 function buildDefaultFilename(data: {
@@ -298,7 +353,6 @@ function renderRecentUrls() {
 		button.textContent = shortenUrl(url);
 		button.addEventListener('click', () => {
 			ui.url.value = url;
-			syncQueryParameters();
 		});
 		listItem.append(button);
 		ui.recentList.append(listItem);
@@ -312,14 +366,81 @@ function pushRecentUrl(url: string) {
 	renderRecentUrls();
 }
 
+function renderQueue() {
+	ui.queueList.textContent = '';
+	if (downloadState.queue.length === 0) {
+		const empty = document.createElement('li');
+		empty.className = 'empty';
+		empty.textContent = 'Queue is empty';
+		ui.queueList.append(empty);
+		return;
+	}
+
+	for (const [index, item] of downloadState.queue.entries()) {
+		const entry = document.createElement('li');
+		entry.textContent = `${index + 1}. ${shortenUrl(item.url)}`;
+		ui.queueList.append(entry);
+	}
+}
+
+function renderFailureList() {
+	ui.failureList.textContent = '';
+	if (downloadState.failedFiles.length === 0) {
+		const empty = document.createElement('li');
+		empty.className = 'empty';
+		empty.textContent = 'None';
+		ui.failureList.append(empty);
+		return;
+	}
+
+	for (const file of downloadState.failedFiles.slice(0, 15)) {
+		const entry = document.createElement('li');
+		entry.textContent = file;
+		ui.failureList.append(entry);
+	}
+}
+
+function parseFilter(): string[] {
+	return ui.filter.value
+		.split(',')
+		.map(value => value.trim().toLowerCase())
+		.filter(Boolean)
+		.map(value => (value.startsWith('.') ? value : `.${value}`));
+}
+
+function filterFiles(files: RepoFile[], extensions: string[]): RepoFile[] {
+	if (extensions.length === 0) {
+		return files;
+	}
+
+	return files.filter(file => extensions.some(extension => file.path.toLowerCase().endsWith(extension)));
+}
+
+function estimateBytes(files: RepoFile[]): number {
+	let total = 0;
+	for (const file of files) {
+		if (typeof file.size === 'number') {
+			total += file.size;
+		}
+	}
+
+	return total;
+}
+
 function buildShareUrl(): string | undefined {
-	const normalizedUrl = parseGithubUrl(ui.url.value);
-	if (!normalizedUrl) {
+	const urls = parseUrlList(ui.url.value);
+	if (urls.length === 0) {
+		addStatus('Enter at least one GitHub directory URL first.');
+		return;
+	}
+
+	const firstUrl = urls[0];
+	if (!firstUrl) {
 		return;
 	}
 
 	const shareUrl = new URL(location.href);
-	shareUrl.searchParams.set('url', normalizedUrl);
+	shareUrl.searchParams.set('url', firstUrl);
 	const filename = ui.filename.value.trim();
 	if (filename.length > 0) {
 		shareUrl.searchParams.set('filename', filename);
@@ -328,25 +449,6 @@ function buildShareUrl(): string | undefined {
 	}
 
 	return shareUrl.toString();
-}
-
-function syncQueryParameters() {
-	const current = new URL(location.href);
-	const url = parseGithubUrl(ui.url.value);
-	if (url) {
-		current.searchParams.set('url', url);
-	} else {
-		current.searchParams.delete('url');
-	}
-
-	const filename = ui.filename.value.trim();
-	if (filename.length > 0) {
-		current.searchParams.set('filename', filename);
-	} else {
-		current.searchParams.delete('filename');
-	}
-
-	history.replaceState(undefined, '', `${current.pathname}${current.search}`);
 }
 
 function parseErrorMessage(error: string): string {
@@ -424,6 +526,7 @@ async function downloadDirectory(options: {
 	gitReference: string;
 	directory: string;
 	isPrivate: boolean;
+	filter: string[];
 }) {
 	addStatus('Retrieving directory file list...');
 	const files = await listFiles({
@@ -443,37 +546,67 @@ async function downloadDirectory(options: {
 		return;
 	}
 
-	if (files.some(file => blockedWords.test(file.path))) {
+	const filteredFiles = filterFiles(files, options.filter);
+	if (filteredFiles.length === 0) {
+		addStatus('No files matched the selected filter.');
+		return;
+	}
+
+	if (filteredFiles.some(file => blockedWords.test(file.path))) {
 		throw new Error('Suspicious filename found. Download canceled.');
 	}
 
-	downloadState.totalFiles = files.length;
+	downloadState.totalFiles = filteredFiles.length;
 	downloadState.downloadedFiles = 0;
-	updateProgress(`Found ${files.length} files`);
+	downloadState.estimatedBytes = estimateBytes(filteredFiles);
+	updateProgress(`Found ${filteredFiles.length} files`);
 
 	const zipPromise = getZip();
 	const concurrency = Number.parseInt(ui.concurrency.value, 10);
 	const safeConcurrency = Number.isNaN(concurrency) ? 20 : Math.max(1, Math.min(40, concurrency));
-	addStatus(`Downloading ${files.length} files with concurrency ${safeConcurrency}...`);
+	addStatus(`Downloading ${filteredFiles.length} files with concurrency ${safeConcurrency}...`);
+
+	downloadState.failedFiles = [];
+	renderFailureList();
+
+	const downloadBatch = async (batch: RepoFile[], attemptLabel: string) => {
+		addStatus(attemptLabel);
+		await pMap(batch, async file => {
+			try {
+				const blob = await downloadFile({
+					user: options.user,
+					repository: options.repository,
+					reference: options.gitReference,
+					file,
+					isPrivate: options.isPrivate,
+					signal: options.signal,
+				});
+
+				const zip = await zipPromise;
+				const relativePath = options.directory ? file.path.replace(`${options.directory}/`, '') : file.path;
+				zip.file(relativePath, blob, {binary: true});
+
+				downloadState.downloadedFiles++;
+				updateProgress(`Downloaded ${downloadState.downloadedFiles}/${downloadState.totalFiles}`);
+			} catch (error) {
+				if (options.signal.aborted || isAbortError(error)) {
+					throw error;
+				}
+
+				downloadState.failedFiles.push(file.path);
+				renderFailureList();
+			}
+		}, {concurrency: safeConcurrency});
+	};
 
 	try {
-		await pMap(files, async file => {
-			const blob = await downloadFile({
-				user: options.user,
-				repository: options.repository,
-				reference: options.gitReference,
-				file,
-				isPrivate: options.isPrivate,
-				signal: options.signal,
-			});
-
-			const zip = await zipPromise;
-			const relativePath = options.directory ? file.path.replace(`${options.directory}/`, '') : file.path;
-			zip.file(relativePath, blob, {binary: true});
-
-			downloadState.downloadedFiles++;
-			updateProgress(`Downloaded ${downloadState.downloadedFiles}/${downloadState.totalFiles}`);
-		}, {concurrency: safeConcurrency});
+		await downloadBatch(filteredFiles, 'Downloading files...');
+		if (downloadState.failedFiles.length > 0) {
+			const retryTargets = filteredFiles.filter(file => downloadState.failedFiles.includes(file.path));
+			downloadState.failedFiles = [];
+			renderFailureList();
+			await downloadBatch(retryTargets, 'Retrying failed files...');
+		}
 	} catch (error) {
 		if (options.signal.aborted || isAbortError(error)) {
 			throw new DOMException('Canceled', 'AbortError');
@@ -503,11 +636,16 @@ async function downloadDirectory(options: {
 	saveFile(zipBlob, filename);
 	updateProgress('Download complete');
 	addStatus(`Saved ${filename}`);
+
+	if (downloadState.failedFiles.length > 0) {
+		addStatus(`Failed files: ${downloadState.failedFiles.length}. See list below.`);
+	}
 }
 
-async function startDownload() {
-	const normalizedUrl = parseGithubUrl(ui.url.value);
+async function runDownload(rawUrl: string, filenameOverride?: string, filterOverride?: string) {
+	const normalizedUrl = parseGithubUrl(rawUrl);
 	if (!normalizedUrl) {
+		addStatus(`Invalid URL skipped: ${rawUrl}`);
 		return;
 	}
 
@@ -522,7 +660,6 @@ async function startDownload() {
 	}
 
 	clearStatus();
-	syncQueryParameters();
 	setBusy(true);
 	startElapsedTimer();
 	addStatus('Preparing download request...');
@@ -543,7 +680,18 @@ async function startDownload() {
 		addStatus(`Directory: /${directory || '(root)'}`);
 		pushRecentUrl(normalizedUrl);
 
+		if (isPrivate && !localStorage.getItem(tokenStorageKey)) {
+			ui.tokenPanel.open = true;
+			ui.token.focus();
+			addStatus('Private repository detected. Please add a token to continue.');
+			return;
+		}
+
 		if ('downloadUrl' in parsedPath) {
+			if (filenameOverride) {
+				ui.filename.value = filenameOverride;
+			}
+
 			await downloadFullRepository({
 				signal: controller.signal,
 				user,
@@ -555,6 +703,12 @@ async function startDownload() {
 			return;
 		}
 
+		if (filenameOverride) {
+			ui.filename.value = filenameOverride;
+		}
+
+		const filter = filterOverride ? filterOverride.split(',') : parseFilter();
+
 		await downloadDirectory({
 			signal: controller.signal,
 			user,
@@ -562,6 +716,7 @@ async function startDownload() {
 			gitReference: parsedPath.gitReference,
 			directory,
 			isPrivate,
+			filter,
 		});
 	} catch (error) {
 		if (downloadState.controller?.signal.aborted || isAbortError(error)) {
@@ -598,6 +753,27 @@ async function startDownload() {
 	}
 }
 
+async function processQueue() {
+	if (downloadState.isProcessingQueue) {
+		return;
+	}
+
+	downloadState.isProcessingQueue = true;
+	while (downloadState.queue.length > 0) {
+		const item = downloadState.queue.shift();
+		if (!item) {
+			break;
+		}
+
+		renderQueue();
+		// eslint-disable-next-line no-await-in-loop -- Process sequentially for predictable queue order
+		await runDownload(item.url, item.filename, item.filter);
+	}
+
+	downloadState.isProcessingQueue = false;
+	renderQueue();
+}
+
 async function copyShareLink() {
 	const shareUrl = buildShareUrl();
 	if (!shareUrl) {
@@ -612,10 +788,45 @@ async function copyShareLink() {
 	}
 }
 
+async function pasteFromClipboard() {
+	try {
+		const text = await navigator.clipboard.readText();
+		if (text) {
+			ui.url.value = text;
+			addStatus('Clipboard content pasted into the URL box.');
+		}
+	} catch {
+		addStatus('Clipboard access denied. Paste manually instead.');
+	}
+}
+
+function handleDrop(event: DragEvent) {
+	event.preventDefault();
+	const text = event.dataTransfer?.getData('text/plain');
+	if (text) {
+		ui.url.value = text;
+		addStatus('Dropped content added to the URL box.');
+	}
+}
+
 function wireEvents() {
 	ui.form.addEventListener('submit', event => {
 		event.preventDefault();
-		void startDownload();
+		const urls = parseUrlList(ui.url.value);
+		if (urls.length === 0) {
+			addStatus('Enter at least one valid GitHub URL.');
+			return;
+		}
+
+		const filename = ui.filename.value.trim();
+		const filter = ui.filter.value.trim();
+		downloadState.queue.push(...urls.map(url => ({
+			url,
+			filename: filename || undefined,
+			filter: filter || undefined,
+		})));
+		renderQueue();
+		void processQueue();
 	});
 
 	ui.cancelButton.addEventListener('click', () => {
@@ -628,16 +839,35 @@ function wireEvents() {
 
 	ui.sampleButton.addEventListener('click', () => {
 		ui.url.value = sampleUrl;
-		syncQueryParameters();
 		ui.url.focus();
 	});
 
-	ui.url.addEventListener('change', () => {
-		syncQueryParameters();
+	ui.pasteButton.addEventListener('click', () => {
+		void pasteFromClipboard();
 	});
 
-	ui.filename.addEventListener('change', () => {
-		syncQueryParameters();
+	ui.addQueueButton.addEventListener('click', () => {
+		const urls = parseUrlList(ui.url.value);
+		if (urls.length === 0) {
+			addStatus('Enter at least one valid GitHub URL.');
+			return;
+		}
+
+		const filename = ui.filename.value.trim();
+		const filter = ui.filter.value.trim();
+		downloadState.queue.push(...urls.map(url => ({
+			url,
+			filename: filename || undefined,
+			filter: filter || undefined,
+		})));
+		renderQueue();
+		addStatus(`Added ${urls.length} URL(s) to the queue.`);
+	});
+
+	ui.clearQueueButton.addEventListener('click', () => {
+		downloadState.queue = [];
+		renderQueue();
+		addStatus('Queue cleared.');
 	});
 
 	ui.clearLogButton.addEventListener('click', () => {
@@ -657,9 +887,29 @@ function wireEvents() {
 
 		if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
 			event.preventDefault();
-			void startDownload();
+			const urls = parseUrlList(ui.url.value);
+			if (urls.length === 0) {
+				addStatus('Enter at least one valid GitHub URL.');
+				return;
+			}
+
+			const filename = ui.filename.value.trim();
+			const filter = ui.filter.value.trim();
+			downloadState.queue.push(...urls.map(url => ({
+				url,
+				filename: filename || undefined,
+				filter: filter || undefined,
+			})));
+			renderQueue();
+			void processQueue();
 		}
 	});
+
+	document.addEventListener('dragover', event => {
+		event.preventDefault();
+	});
+
+	document.addEventListener('drop', handleDrop);
 }
 
 function hydrateFromQuery() {
@@ -676,15 +926,15 @@ function hydrateFromQuery() {
 
 	if (url) {
 		addStatus('URL detected in query parameters. Auto-starting download...');
-		void startDownload();
+		void runDownload(url, filename ?? undefined, undefined);
 	}
 }
 
 function init() {
 	resetSession();
-	document.documentElement.dataset['theme'] = 'ocean';
 	parseToken();
 	renderRecentUrls();
+	renderQueue();
 	wireEvents();
 	hydrateFromQuery();
 	if (ui.status.textContent === '') {

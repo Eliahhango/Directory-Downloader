@@ -25,6 +25,7 @@
 		</div>
 		<nav class="nav">
 			<a href="#download">Download</a>
+			<a href="#queue">Queue</a>
 			<a href="#session">Session</a>
 			<a href="#activity">Activity</a>
 			<a href="#about">About</a>
@@ -73,21 +74,24 @@
 		<section class="hero-panels">
 			<div class="panel-card form-card">
 				<form id="download-form" novalidate>
-					<label for="url">GitHub directory URL</label>
+					<label for="url">GitHub directory URL or URLs (one per line)</label>
 					<div class="input-row">
-						<input
+						<textarea
 							id="url"
-							autofocus
 							name="url"
-							type="url"
+							rows="3"
 							placeholder="https://github.com/owner/repo/tree/branch/folder"
 							required
-						>
+						></textarea>
 						<button id="sample-button" type="button">Example</button>
+					</div>
+					<div class="input-row">
+						<button id="paste-button" type="button">Paste from clipboard</button>
+						<button id="add-queue" type="button">Add to queue</button>
 					</div>
 					<p class="hint">
 						Paste a URL like
-						<code>https://github.com/mrdoob/three.js/tree/dev/build</code>
+						<code>https://github.com/mrdoob/three.js/tree/dev/build</code>. Drag and drop also works.
 					</p>
 					<div class="grid-two">
 						<div>
@@ -103,6 +107,8 @@
 							</select>
 						</div>
 					</div>
+					<label for="filter">File type filter (comma-separated, optional)</label>
+					<input id="filter" name="filter" type="text" placeholder=".ts, .js, .md">
 					<details id="token-panel">
 						<summary>Private repositories (GitHub token)</summary>
 						<label for="token">Personal access token</label>
@@ -126,6 +132,18 @@
 				</form>
 			</div>
 
+			<div class="panel-card queue-card" id="queue">
+				<div class="card-head">
+					<h2>Queue</h2>
+					<div class="queue-actions">
+						<button id="clear-queue" type="button">Clear queue</button>
+					</div>
+				</div>
+				<ul id="queue-list" class="queue-list">
+					<li class="empty">Queue is empty</li>
+				</ul>
+			</div>
+
 			<div class="panel-card session-card" id="session">
 				<div class="card-head">
 					<h2>Session</h2>
@@ -143,6 +161,16 @@
 					<article>
 						<strong id="stat-elapsed">00:00</strong>
 						<span>Elapsed</span>
+					</article>
+				</div>
+				<div class="stats">
+					<article>
+						<strong id="stat-estimate">--</strong>
+						<span>Estimated size</span>
+					</article>
+					<article>
+						<strong id="stat-failed">0</strong>
+						<span>Failed files</span>
 					</article>
 				</div>
 				<div class="progress-wrap">
@@ -163,6 +191,12 @@
 					<span class="log-hint">Latest events appear first.</span>
 				</div>
 				<pre id="status-log" class="status" aria-live="polite"></pre>
+				<div class="failure-list" id="failure-panel">
+					<h3>Failed files</h3>
+					<ul id="failure-list">
+						<li class="empty">None</li>
+					</ul>
+				</div>
 			</div>
 		</section>
 	</main>
