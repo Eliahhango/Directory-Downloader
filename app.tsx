@@ -757,12 +757,29 @@ export default function App() {
 						repositories and private repos with a token.
 					</p>
 					<div className="hero-actions">
-						<button id="start-button" type="submit" form="download-form" disabled={isBusy}>Download directory</button>
-						<button id="share-button" type="button" onClick={() => {
+						<button id="start-button" className="btn btn-primary" type="submit" form="download-form" disabled={isBusy}>
+							<span className="btn-icon" aria-hidden="true">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+									<path d="M12 3v12"></path>
+									<path d="M7 10l5 5 5-5"></path>
+									<path d="M5 21h14"></path>
+								</svg>
+							</span>
+							Download directory
+						</button>
+						<button id="share-button" className="btn btn-ghost" type="button" onClick={() => {
 							copyShareLink().catch(error => {
 								console.error(error);
 							});
-						}}>Copy share link</button>
+						}}>
+							<span className="btn-icon" aria-hidden="true">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+									<path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 12"></path>
+									<path d="M14 11a5 5 0 0 1 0 7L12.5 19.5a5 5 0 0 1-7-7L7 11"></path>
+								</svg>
+							</span>
+							Copy share link
+						</button>
 					</div>
 					<div className="hero-meta">
 						<span>Tip: Ctrl/Command + Enter starts instantly.</span>
@@ -860,12 +877,29 @@ export default function App() {
 								<button id="sample-button" type="button" onClick={() => setUrlText(sampleUrl)} disabled={isBusy}>Example</button>
 							</div>
 							<div className="input-row">
-								<button id="paste-button" type="button" onClick={() => {
+								<button id="paste-button" className="btn btn-soft" type="button" onClick={() => {
 									pasteFromClipboard().catch(error => {
 										console.error(error);
 									});
-								}} disabled={isBusy}>Paste from clipboard</button>
-								<button id="add-queue" type="button" onClick={addToQueue} disabled={isBusy}>Add to queue</button>
+								}} disabled={isBusy}>
+									<span className="btn-icon" aria-hidden="true">
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+											<path d="M8 4h8l2 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
+											<path d="M9 12h6"></path>
+											<path d="M9 16h6"></path>
+										</svg>
+									</span>
+									Paste from clipboard
+								</button>
+								<button id="add-queue" className="btn btn-primary" type="button" onClick={addToQueue} disabled={isBusy}>
+									<span className="btn-icon" aria-hidden="true">
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+											<path d="M12 5v14"></path>
+											<path d="M5 12h14"></path>
+										</svg>
+									</span>
+									Add to queue
+								</button>
 							</div>
 							<p className="hint">
 								Paste a URL like
@@ -937,8 +971,25 @@ export default function App() {
 								<p className="hint">Stored only in your local browser storage.</p>
 							</details>
 							<div className="actions">
-								<button id="cancel-button" type="button" disabled={!isBusy} onClick={() => clearAll('Download canceled. Ready for a new request.')}>Cancel</button>
-								<button id="clear-log" type="button" onClick={() => clearAll('All fields cleared. Ready for a new request.')}>Clear all</button>
+								<button id="cancel-button" className="btn btn-danger" type="button" disabled={!isBusy} onClick={() => clearAll('Download canceled. Ready for a new request.')}>
+									<span className="btn-icon" aria-hidden="true">
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+											<path d="M18 6L6 18"></path>
+											<path d="M6 6l12 12"></path>
+										</svg>
+									</span>
+								Cancel
+								</button>
+								<button id="clear-log" className="btn btn-ghost" type="button" onClick={() => clearAll('All fields cleared. Ready for a new request.')}>
+									<span className="btn-icon" aria-hidden="true">
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+											<path d="M3 6h18"></path>
+											<path d="M8 6V4h8v2"></path>
+											<path d="M6 6l1 14h10l1-14"></path>
+										</svg>
+									</span>
+								Clear all
+								</button>
 							</div>
 						</form>
 					</div>
@@ -947,7 +998,16 @@ export default function App() {
 						<div className="card-head">
 							<h2>Queue</h2>
 							<div className="queue-actions">
-								<button id="clear-queue" type="button" onClick={clearQueue}>Clear queue</button>
+								<button id="clear-queue" className="btn btn-ghost" type="button" onClick={clearQueue}>
+									<span className="btn-icon" aria-hidden="true">
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+											<path d="M3 6h18"></path>
+											<path d="M10 6v10"></path>
+											<path d="M14 6v10"></path>
+										</svg>
+									</span>
+								Clear queue
+								</button>
 							</div>
 						</div>
 						<ul className="queue-list">
@@ -964,7 +1024,16 @@ export default function App() {
 					<div className="panel-card session-card" id="session">
 						<div className="card-head">
 							<h2>Session</h2>
-							<button id="clear-recent" type="button" onClick={clearRecent}>Clear recent</button>
+							<button id="clear-recent" className="btn btn-ghost" type="button" onClick={clearRecent}>
+								<span className="btn-icon" aria-hidden="true">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+										<path d="M12 8v4l3 2"></path>
+										<path d="M3 12a9 9 0 1 0 3-6.7"></path>
+										<path d="M3 5v4h4"></path>
+									</svg>
+								</span>
+							Clear recent
+							</button>
 						</div>
 						<div className="stats">
 							<article>

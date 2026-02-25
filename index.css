@@ -10,12 +10,14 @@
 	--accent: #3f6ff2;
 	--accent-strong: #2758d6;
 	--accent-soft: rgb(63 111 242 / 12%);
+	--accent-glow: rgb(63 111 242 / 26%);
 	--border: rgb(31 41 51 / 12%);
 	--danger: #c74848;
 	--shadow: 0 14px 28px rgb(17 24 39 / 10%);
 	--ring: 0 0 0 3px rgb(63 111 242 / 18%);
 	--radius: 18px;
 	--page-padding: 20px;
+	--button-radius: 999px;
 	color-scheme: light;
 }
 
@@ -140,7 +142,7 @@ code,
 
 .source-link {
 	padding: 8px 14px;
-	border-radius: 999px;
+	border-radius: var(--button-radius);
 	border: 1px solid var(--border);
 	background: var(--surface-strong);
 	text-decoration: none;
@@ -405,7 +407,7 @@ textarea:focus {
 
 button {
 	padding: 11px 16px;
-	border-radius: 12px;
+	border-radius: var(--button-radius);
 	border: 1px solid var(--border);
 	background: var(--surface-strong);
 	color: var(--text);
@@ -429,7 +431,7 @@ button:disabled {
 	border-color: transparent;
 	color: #ffffff;
 	font-weight: 700;
-	box-shadow: 0 12px 24px rgb(63 111 242 / 25%);
+	box-shadow: 0 12px 24px var(--accent-glow);
 	animation: pulse 2.8s ease-in-out infinite;
 }
 
@@ -443,6 +445,45 @@ button:disabled {
 	gap: 10px;
 	flex-wrap: wrap;
 	justify-content: center;
+}
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-weight: 600;
+}
+
+.btn-icon {
+	width: 18px;
+	height: 18px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.btn-primary {
+	background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+	border-color: transparent;
+	color: #ffffff;
+	box-shadow: 0 10px 20px var(--accent-glow);
+}
+
+.btn-ghost {
+	background: #ffffff;
+	border-color: rgb(63 111 242 / 20%);
+	color: var(--accent-strong);
+}
+
+.btn-soft {
+	background: var(--accent-soft);
+	border-color: transparent;
+	color: var(--accent-strong);
+}
+
+.btn-danger {
+	color: var(--danger);
+	border-color: rgb(199 72 72 / 35%);
 }
 
 #token-panel {
@@ -484,6 +525,11 @@ button:disabled {
 	border: 1px solid var(--border);
 	background: var(--surface-strong);
 	font-size: 0.85rem;
+}
+
+.queue-actions,
+.header-actions {
+	gap: 8px;
 }
 
 .queue-list .empty,
