@@ -1,0 +1,12 @@
+{
+	"version": 2,
+	"buildCommand": "npm run build:bundle",
+	"outputDirectory": "public",
+	"framework": null,
+	"rewrites": [
+		{
+			"source": "/(.*)",
+			"destination": "/index.html"
+		}
+	]
+}
