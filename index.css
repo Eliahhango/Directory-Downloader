@@ -196,6 +196,53 @@ code,
 	max-width: 480px;
 }
 
+.left-stack {
+	display: grid;
+	gap: 12px;
+	max-width: 480px;
+}
+
+.info-card {
+	padding: 14px 16px;
+	border-radius: 16px;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	box-shadow: var(--shadow);
+	display: grid;
+	gap: 8px;
+}
+
+.info-card ol {
+	margin: 0;
+	padding-left: 18px;
+	color: var(--muted);
+}
+
+.info-card li {
+	margin: 4px 0;
+}
+
+.metric-strip {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 8px;
+	padding: 14px 16px;
+	border-radius: 16px;
+	background: var(--accent-soft);
+	border: 1px solid var(--border);
+}
+
+.metric-strip div {
+	display: grid;
+	gap: 4px;
+	font-size: 0.85rem;
+	color: var(--muted);
+}
+
+.metric-strip strong {
+	color: var(--text);
+}
+
 .inspiration-card h3 {
 	font-size: 1rem;
 }
@@ -245,6 +292,17 @@ code,
 .panel-card:hover {
 	transform: translateY(-2px);
 	box-shadow: 0 18px 34px rgb(17 24 39 / 14%);
+}
+
+.reveal {
+	opacity: 0;
+	transform: translateY(12px);
+	transition: opacity 500ms ease, transform 500ms ease;
+}
+
+.reveal.reveal-visible {
+	opacity: 1;
+	transform: translateY(0);
 }
 
 .form-card {

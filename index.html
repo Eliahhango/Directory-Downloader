@@ -36,7 +36,7 @@
 	</header>
 
 	<main class="hero" id="download">
-		<section class="hero-copy">
+		<section class="hero-copy reveal">
 			<div class="eyebrow">Ultimate GitHub Folder Utility</div>
 			<h1>Ultimate Directory Downloader UI</h1>
 			<p>
@@ -50,14 +50,14 @@
 			<div class="hero-meta">
 				<span>Tip: Ctrl/Command + Enter starts instantly.</span>
 			</div>
-			<div class="inspiration-card" id="about">
+			<div class="inspiration-card reveal" id="about">
 				<h3>Inspired by EliTechWiz</h3>
 				<p>
 					Cybersecurity expert, software architect, and creative designer. I focus on building secure
 					systems that feel effortless to use.
 				</p>
 			</div>
-			<div class="testimonial-card">
+			<div class="testimonial-card reveal">
 				<p>
 					"The fastest way I have found to package a subfolder and move on."
 				</p>
@@ -69,10 +69,38 @@
 					</div>
 				</div>
 			</div>
+			<div class="left-stack">
+				<div class="info-card reveal">
+					<h3>Workflow</h3>
+					<ol>
+						<li>Paste a GitHub folder URL.</li>
+						<li>Pick speed and optional filters.</li>
+						<li>Download a clean zip.</li>
+					</ol>
+				</div>
+				<div class="info-card reveal">
+					<h3>Why it is fast</h3>
+					<p>Parallel file fetch, automatic retries, and streaming zip creation.</p>
+				</div>
+				<div class="metric-strip reveal">
+					<div>
+						<strong>Queue</strong>
+						<span>Batch multiple links</span>
+					</div>
+					<div>
+						<strong>Filters</strong>
+						<span>Limit file types</span>
+					</div>
+					<div>
+						<strong>Secure</strong>
+						<span>Token stays local</span>
+					</div>
+				</div>
+			</div>
 		</section>
 
 		<section class="hero-panels">
-			<div class="panel-card form-card">
+			<div class="panel-card form-card reveal">
 				<form id="download-form" novalidate>
 					<label for="url">GitHub directory URL or URLs (one per line)</label>
 					<div class="input-row">
@@ -132,7 +160,7 @@
 				</form>
 			</div>
 
-			<div class="panel-card queue-card" id="queue">
+			<div class="panel-card queue-card reveal" id="queue">
 				<div class="card-head">
 					<h2>Queue</h2>
 					<div class="queue-actions">
@@ -144,7 +172,7 @@
 				</ul>
 			</div>
 
-			<div class="panel-card session-card" id="session">
+			<div class="panel-card session-card reveal" id="session">
 				<div class="card-head">
 					<h2>Session</h2>
 					<button id="clear-recent" type="button">Clear recent</button>
@@ -185,7 +213,7 @@
 				</div>
 			</div>
 
-			<div class="panel-card log-card" id="activity">
+			<div class="panel-card log-card reveal" id="activity">
 				<div class="card-head">
 					<h2>Activity</h2>
 					<span class="log-hint">Latest events appear first.</span>

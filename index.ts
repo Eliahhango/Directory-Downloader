@@ -912,6 +912,35 @@ function wireEvents() {
 	document.addEventListener('drop', handleDrop);
 }
 
+function setupReveal() {
+	const elements = [...document.querySelectorAll<HTMLElement>('.reveal')];
+
+	if (elements.length === 0) {
+		return;
+	}
+
+	if (!('IntersectionObserver' in window)) {
+		for (const element of elements) {
+			element.classList.add('reveal-visible');
+		}
+
+		return;
+	}
+
+	const observer = new IntersectionObserver(entries => {
+		for (const entry of entries) {
+			if (entry.isIntersecting) {
+				entry.target.classList.add('reveal-visible');
+				observer.unobserve(entry.target);
+			}
+		}
+	}, {threshold: 0.15});
+
+	for (const element of elements) {
+		observer.observe(element);
+	}
+}
+
 function hydrateFromQuery() {
 	const query = new URLSearchParams(location.search);
 	const url = query.get('url');
@@ -936,6 +965,7 @@ function init() {
 	renderRecentUrls();
 	renderQueue();
 	wireEvents();
+	setupReveal();
 	hydrateFromQuery();
 	if (ui.status.textContent === '') {
 		addStatus('Ready. Paste a GitHub folder URL and press Download directory.');
