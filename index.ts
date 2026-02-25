@@ -15,12 +15,9 @@ import getRepositoryInfo from './repository-info.js';
 type ApiOptions = ListGithubDirectoryOptions & {getFullData: true};
 type RepoFile = TreeResponseObject | ContentsReponseObject;
 
-type Theme = 'elite' | 'forest' | 'ocean' | 'sunset';
-
 const sampleUrl = 'https://github.com/mrdoob/three.js/tree/dev/build';
 const blockedWords = /malware|virus|trojan/i;
 const recentStorageKey = 'recent-directory-links';
-const themeStorageKey = 'theme';
 const tokenStorageKey = 'token';
 
 const ui = {
@@ -35,7 +32,6 @@ const ui = {
 	cancelButton: document.querySelector<HTMLButtonElement>('#cancel-button')!,
 	shareButton: document.querySelector<HTMLButtonElement>('#share-button')!,
 	sampleButton: document.querySelector<HTMLButtonElement>('#sample-button')!,
-	themeSelect: document.querySelector<HTMLSelectElement>('#theme-select')!,
 	progress: document.querySelector<HTMLProgressElement>('#progress')!,
 	progressLabel: document.querySelector<HTMLElement>('#progress-label')!,
 	status: document.querySelector<HTMLPreElement>('#status-log')!,
@@ -314,25 +310,6 @@ function pushRecentUrl(url: string) {
 	urls.unshift(url);
 	writeRecentUrls(urls);
 	renderRecentUrls();
-}
-
-function applyTheme(theme: Theme) {
-	document.documentElement.dataset['theme'] = theme;
-	ui.themeSelect.value = theme;
-	localStorage.setItem(themeStorageKey, theme);
-}
-
-function parseTheme() {
-	const stored = localStorage.getItem(themeStorageKey);
-	if (stored === 'elite' || stored === 'forest' || stored === 'ocean' || stored === 'sunset') {
-		applyTheme(stored);
-	} else {
-		applyTheme('elite');
-	}
-
-	ui.themeSelect.addEventListener('change', () => {
-		applyTheme(ui.themeSelect.value as Theme);
-	});
 }
 
 function buildShareUrl(): string | undefined {
@@ -705,8 +682,8 @@ function hydrateFromQuery() {
 
 function init() {
 	resetSession();
+	document.documentElement.dataset['theme'] = 'ocean';
 	parseToken();
-	parseTheme();
 	renderRecentUrls();
 	wireEvents();
 	hydrateFromQuery();

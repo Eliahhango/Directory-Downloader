@@ -1,57 +1,4 @@
 :root {
-	--font-body: 'Space Grotesk', 'Segoe UI', sans-serif;
-	--font-mono: 'IBM Plex Mono', Consolas, monospace;
-	--bg: #f2f1ff;
-	--bg-alt: #ebe9ff;
-	--shape: rgb(140 120 255 / 18%);
-	--surface: #ffffff;
-	--surface-strong: #ffffff;
-	--text: #2a2e3a;
-	--muted: #6a6f7e;
-	--accent: #7a5dff;
-	--accent-strong: #4d77ff;
-	--accent-soft: rgb(122 93 255 / 12%);
-	--border: rgb(60 72 120 / 12%);
-	--danger: #d94b4b;
-	--shadow: 0 20px 40px rgb(41 45 74 / 14%);
-	--ring: 0 0 0 3px rgb(122 93 255 / 22%);
-	--radius: 22px;
-	color-scheme: light;
-}
-
-:root[data-theme='elite'] {
-	--bg: #f2f1ff;
-	--bg-alt: #ebe9ff;
-	--shape: rgb(140 120 255 / 18%);
-	--surface: #ffffff;
-	--surface-strong: #ffffff;
-	--text: #2a2e3a;
-	--muted: #6a6f7e;
-	--accent: #7a5dff;
-	--accent-strong: #4d77ff;
-	--accent-soft: rgb(122 93 255 / 12%);
-	--border: rgb(60 72 120 / 12%);
-	--ring: 0 0 0 3px rgb(122 93 255 / 22%);
-	color-scheme: light;
-}
-
-:root[data-theme='forest'] {
-	--bg: #081c12;
-	--bg-alt: #123a2a;
-	--shape: rgb(136 255 171 / 28%);
-	--surface: rgb(5 19 12 / 70%);
-	--surface-strong: rgb(8 24 16 / 90%);
-	--text: #f2fff8;
-	--muted: #bed8c8;
-	--accent: #62ffa6;
-	--accent-strong: #12ad65;
-	--accent-soft: rgb(98 255 166 / 14%);
-	--border: rgb(152 250 186 / 35%);
-	--ring: 0 0 0 3px rgb(98 255 166 / 28%);
-	color-scheme: dark;
-}
-
-:root[data-theme='ocean'] {
 	--bg: #071828;
 	--bg-alt: #123555;
 	--shape: rgb(124 189 255 / 25%);
@@ -63,23 +10,10 @@
 	--accent-strong: #168fcd;
 	--accent-soft: rgb(116 215 255 / 14%);
 	--border: rgb(116 215 255 / 30%);
+	--danger: #ff7b7b;
+	--shadow: 0 22px 44px rgb(2 10 20 / 35%);
 	--ring: 0 0 0 3px rgb(116 215 255 / 28%);
-	color-scheme: dark;
-}
-
-:root[data-theme='sunset'] {
-	--bg: #271409;
-	--bg-alt: #6a2f18;
-	--shape: rgb(255 197 130 / 28%);
-	--surface: rgb(35 16 8 / 70%);
-	--surface-strong: rgb(47 21 10 / 90%);
-	--text: #fff5ed;
-	--muted: #f5d7c0;
-	--accent: #ffb159;
-	--accent-strong: #e06a2b;
-	--accent-soft: rgb(255 177 89 / 16%);
-	--border: rgb(255 183 111 / 30%);
-	--ring: 0 0 0 3px rgb(255 177 89 / 28%);
+	--radius: 22px;
 	color-scheme: dark;
 }
 
@@ -103,8 +37,8 @@ body {
 	color: var(--text);
 	background:
 		radial-gradient(circle at 20% 10%, var(--bg-alt), transparent 45%),
-		radial-gradient(circle at 90% 80%, rgb(77 119 255 / 10%), transparent 42%),
-		linear-gradient(160deg, #ffffff, var(--bg) 60%);
+		radial-gradient(circle at 90% 80%, rgb(116 215 255 / 14%), transparent 42%),
+		linear-gradient(160deg, #030812, var(--bg) 60%);
 	position: relative;
 }
 
@@ -278,6 +212,24 @@ code,
 
 .hero-meta {
 	font-size: 0.85rem;
+	color: var(--muted);
+}
+
+.inspiration-card {
+	padding: 14px 16px;
+	border-radius: 18px;
+	background: rgb(116 215 255 / 10%);
+	border: 1px solid var(--border);
+	display: grid;
+	gap: 6px;
+	max-width: 460px;
+}
+
+.inspiration-card h3 {
+	font-size: 1rem;
+}
+
+.inspiration-card p {
 	color: var(--muted);
 }
 
