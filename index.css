@@ -15,6 +15,7 @@
 	--shadow: 0 14px 28px rgb(17 24 39 / 10%);
 	--ring: 0 0 0 3px rgb(63 111 242 / 18%);
 	--radius: 18px;
+	--page-padding: 20px;
 	color-scheme: light;
 }
 
@@ -33,11 +34,19 @@ body {
 
 body {
 	margin: 0;
-	padding: 24px;
-	font: 500 1rem/1.6 var(--font-body);
+	padding: var(--page-padding);
+	font: 500 1.02rem/1.7 var(--font-body);
 	color: var(--text);
 	background: linear-gradient(180deg, var(--bg), var(--bg-alt));
 	animation: page-fade 600ms ease both;
+}
+
+.page {
+	width: min(1200px, 100%);
+	margin: 0 auto;
+	display: grid;
+	gap: 28px;
+	justify-items: center;
 }
 
 a {
@@ -68,27 +77,30 @@ code,
 	border: 1px solid var(--border);
 	box-shadow: var(--shadow);
 	animation: rise-in 500ms ease both;
+	width: 100%;
 }
 
 .brand {
 	display: grid;
 	gap: 4px;
+	text-align: center;
 }
 
 .brand-name {
 	font-weight: 700;
-	font-size: 1.1rem;
+	font-size: 1.15rem;
 }
 
 .brand-subtitle {
-	font-size: 0.85rem;
+	font-size: 0.9rem;
 	color: var(--muted);
 }
 
 .nav {
 	display: flex;
 	gap: 16px;
-	font-size: 0.9rem;
+	font-size: 0.95rem;
+	justify-content: center;
 }
 
 .nav a {
@@ -123,6 +135,7 @@ code,
 .header-actions {
 	display: flex;
 	gap: 10px;
+	justify-content: center;
 }
 
 .source-link {
@@ -141,6 +154,7 @@ code,
 	grid-template-columns: 0.95fr 1.05fr;
 	gap: 28px;
 	align-items: start;
+	width: 100%;
 }
 
 .hero-copy {
@@ -148,6 +162,8 @@ code,
 	gap: 18px;
 	padding: 12px 6px;
 	animation: rise-in 600ms ease both;
+	justify-items: center;
+	text-align: center;
 }
 
 .eyebrow {
@@ -164,19 +180,20 @@ code,
 }
 
 .hero-copy h1 {
-	font-size: clamp(2.2rem, 4.8vw, 3.2rem);
+	font-size: clamp(2.35rem, 4.8vw, 3.4rem);
 	line-height: 1.05;
 }
 
 .hero-copy p {
 	color: var(--muted);
-	max-width: 480px;
+	max-width: 520px;
 }
 
 .hero-actions {
 	display: flex;
 	gap: 12px;
 	flex-wrap: wrap;
+	justify-content: center;
 }
 
 .hero-meta {
@@ -194,12 +211,14 @@ code,
 	display: grid;
 	gap: 8px;
 	max-width: 480px;
+	text-align: left;
 }
 
 .left-stack {
 	display: grid;
 	gap: 12px;
 	max-width: 480px;
+	width: 100%;
 }
 
 .info-card {
@@ -278,6 +297,7 @@ code,
 	display: grid;
 	gap: 18px;
 	animation: rise-in 650ms ease both;
+	width: 100%;
 }
 
 .panel-card {
@@ -312,6 +332,7 @@ code,
 form {
 	display: grid;
 	gap: 14px;
+	justify-items: center;
 }
 
 label,
@@ -328,6 +349,8 @@ summary {
 	display: flex;
 	gap: 10px;
 	align-items: stretch;
+	width: 100%;
+	justify-content: center;
 }
 
 textarea {
@@ -339,6 +362,7 @@ textarea {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 12px;
+	width: 100%;
 }
 
 .grid-two > div {
@@ -418,6 +442,7 @@ button:disabled {
 	display: flex;
 	gap: 10px;
 	flex-wrap: wrap;
+	justify-content: center;
 }
 
 #token-panel {
@@ -474,6 +499,7 @@ button:disabled {
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: 10px;
 	margin-top: 12px;
+	text-align: center;
 }
 
 .stats article {
@@ -499,6 +525,7 @@ button:disabled {
 	display: grid;
 	gap: 7px;
 	margin-top: 12px;
+	width: 100%;
 }
 
 progress {
@@ -560,6 +587,7 @@ progress::-moz-progress-bar {
 	min-height: 180px;
 	font-size: 0.83rem;
 	line-height: 1.45;
+	width: 100%;
 }
 
 .status > div {
@@ -579,6 +607,9 @@ progress::-moz-progress-bar {
 	justify-content: space-between;
 	gap: 16px;
 	flex-wrap: wrap;
+	width: 100%;
+	justify-content: center;
+	text-align: center;
 }
 
 .footer-links {
@@ -645,6 +676,7 @@ progress::-moz-progress-bar {
 
 	.nav {
 		flex-wrap: wrap;
+		justify-content: center;
 	}
 
 	.hero-actions {

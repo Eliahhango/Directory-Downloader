@@ -720,7 +720,7 @@ export default function App() {
 	}, []);
 
 	return (
-		<div>
+		<div className="page">
 			<motion.header
 				className="site-header"
 				initial={{opacity: 0, y: -20}}
@@ -1078,3 +1078,4 @@ function parseErrorMessage(error: string): string {
 		}
 	}
 }
+
