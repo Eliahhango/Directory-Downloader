@@ -164,7 +164,7 @@ code,
 	gap: 18px;
 	padding: 16px 18px;
 	border-radius: 999px;
-	background: rgb(255 255 255 / 80%);
+	background: var(--surface);
 	border: 1px solid var(--border);
 	box-shadow: var(--shadow);
 	backdrop-filter: blur(12px);
@@ -203,7 +203,7 @@ code,
 }
 
 .pill.soft {
-	background: #ffffff;
+	background: var(--surface);
 	color: var(--text);
 	border: 1px solid var(--border);
 	font-weight: 500;
@@ -224,9 +224,10 @@ code,
 	padding: 8px 14px;
 	border-radius: 999px;
 	border: 1px solid var(--border);
-	background: #ffffff;
+	background: var(--surface);
 	text-decoration: none;
 	font-size: 0.85rem;
+	color: var(--text);
 }
 
 .hero {
@@ -261,7 +262,7 @@ code,
 .hero-copy h1 {
 	font-size: clamp(2.2rem, 4.8vw, 3.4rem);
 	line-height: 1.05;
-	color: #202433;
+	color: var(--text);
 }
 
 .hero-copy p {
@@ -283,7 +284,7 @@ code,
 .testimonial-card {
 	padding: 16px 18px;
 	border-radius: 20px;
-	background: #ffffff;
+	background: var(--surface);
 	border: 1px solid var(--border);
 	box-shadow: var(--shadow);
 	display: grid;
@@ -293,6 +294,7 @@ code,
 
 .testimonial-card p {
 	font-weight: 600;
+	color: var(--text);
 }
 
 .testimonial-author {
@@ -320,7 +322,7 @@ code,
 }
 
 .panel-card {
-	background: #ffffff;
+	background: var(--surface);
 	border-radius: 24px;
 	border: 1px solid var(--border);
 	box-shadow: var(--shadow);
@@ -328,7 +330,7 @@ code,
 }
 
 .form-card {
-	background: linear-gradient(180deg, #ffffff 0%, #f8f7ff 100%);
+	background: linear-gradient(180deg, var(--surface) 0%, var(--surface-strong) 100%);
 }
 
 form {
@@ -376,7 +378,7 @@ select {
 	padding: 11px 13px;
 	border-radius: 14px;
 	border: 1px solid var(--border);
-	background: #ffffff;
+	background: var(--surface-strong);
 	color: var(--text);
 	outline: none;
 	transition: border-color 180ms ease, box-shadow 180ms ease;
@@ -396,7 +398,7 @@ button {
 	padding: 11px 16px;
 	border-radius: 14px;
 	border: 1px solid var(--border);
-	background: #ffffff;
+	background: var(--surface);
 	color: var(--text);
 	cursor: pointer;
 	transition: transform 140ms ease, background-color 140ms ease;
@@ -422,7 +424,7 @@ button:disabled {
 }
 
 #share-button {
-	background: #ffffff;
+	background: var(--surface);
 	border: 1px solid var(--border);
 }
 
@@ -583,7 +585,7 @@ progress::-moz-progress-bar {
 	margin-top: 28px;
 	padding: 18px 20px;
 	border-radius: 20px;
-	background: #ffffff;
+	background: var(--surface);
 	border: 1px solid var(--border);
 	box-shadow: var(--shadow);
 	color: var(--muted);
