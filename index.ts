@@ -175,6 +175,29 @@ function resetSession() {
 	updateProgress('Idle');
 }
 
+function clearAll(reason?: string) {
+	downloadState.controller?.abort();
+	downloadState.controller = undefined;
+	stopElapsedTimer();
+	resetSession();
+	clearStatus();
+	ui.url.value = '';
+	ui.filename.value = '';
+	ui.progress.value = 0;
+	ui.progress.max = 1;
+	ui.token.type = 'password';
+	ui.toggleToken.textContent = 'Show';
+	ui.toggleToken.setAttribute('aria-pressed', 'false');
+	ui.token.value = '';
+	localStorage.removeItem(tokenStorageKey);
+	writeRecentUrls([]);
+	renderRecentUrls();
+	setBusy(false);
+	if (reason) {
+		addStatus(reason);
+	}
+}
+
 function parseGithubUrl(rawUrl: string): string | undefined {
 	const candidate = rawUrl.trim();
 	if (candidate.length === 0) {
@@ -587,6 +610,8 @@ async function startDownload() {
 					break;
 				}
 			}
+		} else {
+			addStatus('Unexpected error occurred. Please retry.');
 		}
 	} finally {
 		stopElapsedTimer();
@@ -617,7 +642,7 @@ function wireEvents() {
 	});
 
 	ui.cancelButton.addEventListener('click', () => {
-		downloadState.controller?.abort();
+		clearAll('Download canceled. Ready for a new request.');
 	});
 
 	ui.shareButton.addEventListener('click', () => {
@@ -639,8 +664,7 @@ function wireEvents() {
 	});
 
 	ui.clearLogButton.addEventListener('click', () => {
-		clearStatus();
-		addStatus('Log cleared.');
+		clearAll('All fields cleared. Ready for a new request.');
 	});
 
 	ui.clearRecentButton.addEventListener('click', () => {

@@ -20,12 +20,20 @@
 <body>
 	<div class="bg-shape shape-a" aria-hidden="true"></div>
 	<div class="bg-shape shape-b" aria-hidden="true"></div>
-	<header class="site-header card">
-		<div class="brand">
-			<img src="logo.svg" alt="" class="brand-logo">
-			<div>
-				<h1>Directory Downloader</h1>
-				<p>Download any GitHub folder as a zip in a few clicks.</p>
+
+	<header class="site-header">
+		<div class="header-left">
+			<div class="brand">
+				<img src="logo.svg" alt="" class="brand-logo">
+				<div>
+					<h1>Directory Downloader</h1>
+					<p>Download any GitHub folder as a zip in a few clicks.</p>
+				</div>
+			</div>
+			<div class="quick-badges">
+				<span class="badge">No signup</span>
+				<span class="badge">Private repos</span>
+				<span class="badge">Instant zip</span>
 			</div>
 		</div>
 		<div class="header-controls">
@@ -46,64 +54,86 @@
 			</a>
 		</div>
 	</header>
+
 	<main class="layout">
-		<section class="card">
-			<form id="download-form" novalidate>
-				<label for="url">GitHub directory URL</label>
-				<div class="input-row">
-					<input
-						id="url"
-						autofocus
-						name="url"
-						type="url"
-						placeholder="https://github.com/owner/repo/tree/branch/folder"
-						required
-					>
-					<button id="sample-button" type="button">Example</button>
-				</div>
-				<p class="hint">
-					Paste a URL like
-					<code>https://github.com/mrdoob/three.js/tree/dev/build</code>
+		<section class="card hero">
+			<div class="hero-copy">
+				<h2>Grab a folder. Ship a zip.</h2>
+				<p>
+					Paste a GitHub directory URL and get a ready-to-download zip. Works on public
+					repos and private repos with a token.
 				</p>
-				<div class="grid-two">
-					<div>
-						<label for="filename">Output filename (optional)</label>
-						<input id="filename" name="filename" type="text" placeholder="my-folder-backup">
-					</div>
-					<div>
-						<label for="concurrency">Download speed</label>
-						<select id="concurrency" name="concurrency">
-							<option value="8">Steady (8)</option>
-							<option value="20" selected>Fast (20)</option>
-							<option value="30">Very fast (30)</option>
-						</select>
-					</div>
-				</div>
-				<details id="token-panel">
-					<summary>Private repositories (GitHub token)</summary>
-					<label for="token">Personal access token</label>
-					<div class="input-row">
-						<input
-							id="token"
-							name="token"
-							type="password"
-							placeholder="ghp_..."
-							autocomplete="off"
-							pattern="[\da-f]{40}|ghp_.+|gho_.+|github_pat_.+"
-						>
-						<button id="toggle-token" type="button" aria-pressed="false">Show</button>
-					</div>
-					<p class="hint">Stored only in your local browser storage.</p>
-				</details>
-				<div class="actions">
-					<button id="start-button" type="submit">Download directory</button>
-					<button id="cancel-button" type="button" disabled>Cancel</button>
+				<div class="hero-actions">
+					<button id="start-button" type="submit" form="download-form">Download directory</button>
 					<button id="share-button" type="button">Copy share link</button>
 				</div>
-			</form>
+				<div class="hero-links">
+					<span>Tip: Press Ctrl/Command + Enter to start.</span>
+				</div>
+			</div>
+			<div class="hero-panel">
+				<form id="download-form" novalidate>
+					<label for="url">GitHub directory URL</label>
+					<div class="input-row">
+						<input
+							id="url"
+							autofocus
+							name="url"
+							type="url"
+							placeholder="https://github.com/owner/repo/tree/branch/folder"
+							required
+						>
+						<button id="sample-button" type="button">Example</button>
+					</div>
+					<p class="hint">
+						Paste a URL like
+						<code>https://github.com/mrdoob/three.js/tree/dev/build</code>
+					</p>
+					<div class="grid-two">
+						<div>
+							<label for="filename">Output filename (optional)</label>
+							<input id="filename" name="filename" type="text" placeholder="my-folder-backup">
+						</div>
+						<div>
+							<label for="concurrency">Download speed</label>
+							<select id="concurrency" name="concurrency">
+								<option value="8">Steady (8)</option>
+								<option value="20" selected>Fast (20)</option>
+								<option value="30">Very fast (30)</option>
+							</select>
+						</div>
+					</div>
+					<details id="token-panel">
+						<summary>Private repositories (GitHub token)</summary>
+						<label for="token">Personal access token</label>
+						<div class="input-row">
+							<input
+								id="token"
+								name="token"
+								type="password"
+								placeholder="ghp_..."
+								autocomplete="off"
+								pattern="[\da-f]{40}|ghp_.+|gho_.+|github_pat_.+"
+							>
+							<button id="toggle-token" type="button" aria-pressed="false">Show</button>
+						</div>
+						<p class="hint">Stored only in your local browser storage.</p>
+					</details>
+					<div class="actions">
+						<button id="cancel-button" type="button" disabled>Cancel</button>
+						<button id="clear-log" type="button">Clear log</button>
+					</div>
+				</form>
+			</div>
 		</section>
-		<aside class="card panel">
-			<h2>Session</h2>
+
+		<section class="card panel">
+			<div class="panel-header">
+				<h2>Session</h2>
+				<div class="panel-actions">
+					<button id="clear-recent" type="button">Clear recent</button>
+				</div>
+			</div>
 			<div class="stats">
 				<article>
 					<strong id="stat-files">0</strong>
@@ -122,30 +152,33 @@
 				<progress id="progress" value="0" max="1"></progress>
 				<div id="progress-label">Idle</div>
 			</div>
-			<div class="recents-header">
+			<div class="recents">
 				<h3>Recent URLs</h3>
-				<button id="clear-recent" type="button">Clear</button>
+				<ul id="recent-list" class="recent-list">
+					<li class="empty">Nothing yet</li>
+				</ul>
 			</div>
-			<ul id="recent-list" class="recent-list">
-				<li class="empty">Nothing yet</li>
-			</ul>
-		</aside>
+		</section>
+
 		<section class="card log-card">
 			<div class="log-header">
 				<h2>Activity</h2>
-				<button id="clear-log" type="button">Clear log</button>
+				<span class="log-hint">Latest events appear first.</span>
 			</div>
 			<pre id="status-log" class="status" aria-live="polite"></pre>
 		</section>
 	</main>
-	<footer class="site-footer card">
-		<p>
-			No content is hosted on this website. Files are fetched directly from GitHub using the URL you provide.
-		</p>
-		<p>
-			<span>Built by </span>
-			<a href="https://www.elitechwiz.site" target="_blank" rel="noreferrer">EliTechWiz</a>
-			<span> | </span>
+
+	<footer class="site-footer">
+		<div>
+			<p>
+				No content is hosted on this website. Files are fetched directly from GitHub using the URL you provide.
+			</p>
+			<p>
+				Built by <a href="https://www.elitechwiz.site" target="_blank" rel="noreferrer">EliTechWiz</a>
+			</p>
+		</div>
+		<div class="footer-links">
 			<a
 				href="https://github.com/settings/tokens/new?description=Directory%20Downloader&scopes=repo"
 				target="_blank"
@@ -153,7 +186,6 @@
 			>
 				Create GitHub token
 			</a>
-			<span> | </span>
 			<a
 				href="https://github.com/download-directory/download-directory.github.io"
 				target="_blank"
@@ -161,7 +193,7 @@
 			>
 				Original project
 			</a>
-		</p>
+		</div>
 	</footer>
 </body>
 </html>
