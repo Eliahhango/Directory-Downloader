@@ -18,25 +18,23 @@
 	>
 </head>
 <body>
-	<div class="bg-shape shape-a" aria-hidden="true"></div>
-	<div class="bg-shape shape-b" aria-hidden="true"></div>
+	<div class="bg-orb orb-a" aria-hidden="true"></div>
+	<div class="bg-orb orb-b" aria-hidden="true"></div>
+	<div class="bg-orb orb-c" aria-hidden="true"></div>
 
-	<header class="site-header">
-		<div class="header-left">
-			<div class="brand">
-				<img src="logo.svg" alt="" class="brand-logo">
-				<div>
-					<h1>Directory Downloader</h1>
-					<p>Download any GitHub folder as a zip in a few clicks.</p>
-				</div>
-			</div>
-			<div class="quick-badges">
-				<span class="badge">No signup</span>
-				<span class="badge">Private repos</span>
-				<span class="badge">Instant zip</span>
-			</div>
+	<header class="topbar">
+		<div class="brand">
+			<img src="logo.svg" alt="" class="brand-logo">
+			<span class="brand-name">Directory Downloader</span>
 		</div>
-		<div class="header-controls">
+		<nav class="topbar-actions">
+			<div class="pill">
+				<span>Bundle!</span>
+			</div>
+			<div class="pill soft">
+				<span>Video Course</span>
+			</div>
+			<div class="divider"></div>
 			<label class="control-label" for="theme-select">Theme</label>
 			<select id="theme-select" name="theme">
 				<option value="elite">Elite</option>
@@ -46,32 +44,46 @@
 			</select>
 			<a
 				class="source-link"
-				href="https://github.com/download-directory/download-directory.github.io"
+				href="https://github.com/Eliahhango/Directory-Downloader"
 				target="_blank"
 				rel="noreferrer"
 			>
 				Source
 			</a>
-		</div>
+		</nav>
 	</header>
 
-	<main class="layout">
-		<section class="card hero">
-			<div class="hero-copy">
-				<h2>Grab a folder. Ship a zip.</h2>
+	<main class="hero">
+		<section class="hero-copy">
+			<div class="eyebrow">Ultimate GitHub Folder Utility</div>
+			<h1>Ultimate Directory Downloader UI</h1>
+			<p>
+				Paste any GitHub directory URL and get a clean zip instantly. Works for public
+				repositories and private repos with a token.
+			</p>
+			<div class="hero-actions">
+				<button id="start-button" type="submit" form="download-form">Download directory</button>
+				<button id="share-button" type="button">Copy share link</button>
+			</div>
+			<div class="hero-meta">
+				<span>Tip: Ctrl/Command + Enter starts instantly.</span>
+			</div>
+			<div class="testimonial-card">
 				<p>
-					Paste a GitHub directory URL and get a ready-to-download zip. Works on public
-					repos and private repos with a token.
+					“The fastest way I have found to package a subfolder and move on.”
 				</p>
-				<div class="hero-actions">
-					<button id="start-button" type="submit" form="download-form">Download directory</button>
-					<button id="share-button" type="button">Copy share link</button>
-				</div>
-				<div class="hero-links">
-					<span>Tip: Press Ctrl/Command + Enter to start.</span>
+				<div class="testimonial-author">
+					<div class="avatar">EW</div>
+					<div>
+						<strong>EliTechWiz</strong>
+						<span>Security & Systems</span>
+					</div>
 				</div>
 			</div>
-			<div class="hero-panel">
+		</section>
+
+		<section class="hero-panels">
+			<div class="panel-card form-card">
 				<form id="download-form" novalidate>
 					<label for="url">GitHub directory URL</label>
 					<div class="input-row">
@@ -121,51 +133,49 @@
 					</details>
 					<div class="actions">
 						<button id="cancel-button" type="button" disabled>Cancel</button>
-						<button id="clear-log" type="button">Clear log</button>
+						<button id="clear-log" type="button">Clear all</button>
 					</div>
 				</form>
 			</div>
-		</section>
 
-		<section class="card panel">
-			<div class="panel-header">
-				<h2>Session</h2>
-				<div class="panel-actions">
+			<div class="panel-card session-card">
+				<div class="card-head">
+					<h2>Session</h2>
 					<button id="clear-recent" type="button">Clear recent</button>
 				</div>
+				<div class="stats">
+					<article>
+						<strong id="stat-files">0</strong>
+						<span>Files found</span>
+					</article>
+					<article>
+						<strong id="stat-downloaded">0</strong>
+						<span>Files downloaded</span>
+					</article>
+					<article>
+						<strong id="stat-elapsed">00:00</strong>
+						<span>Elapsed</span>
+					</article>
+				</div>
+				<div class="progress-wrap">
+					<progress id="progress" value="0" max="1"></progress>
+					<div id="progress-label">Idle</div>
+				</div>
+				<div class="recents">
+					<h3>Recent URLs</h3>
+					<ul id="recent-list" class="recent-list">
+						<li class="empty">Nothing yet</li>
+					</ul>
+				</div>
 			</div>
-			<div class="stats">
-				<article>
-					<strong id="stat-files">0</strong>
-					<span>Files found</span>
-				</article>
-				<article>
-					<strong id="stat-downloaded">0</strong>
-					<span>Files downloaded</span>
-				</article>
-				<article>
-					<strong id="stat-elapsed">00:00</strong>
-					<span>Elapsed</span>
-				</article>
-			</div>
-			<div class="progress-wrap">
-				<progress id="progress" value="0" max="1"></progress>
-				<div id="progress-label">Idle</div>
-			</div>
-			<div class="recents">
-				<h3>Recent URLs</h3>
-				<ul id="recent-list" class="recent-list">
-					<li class="empty">Nothing yet</li>
-				</ul>
-			</div>
-		</section>
 
-		<section class="card log-card">
-			<div class="log-header">
-				<h2>Activity</h2>
-				<span class="log-hint">Latest events appear first.</span>
+			<div class="panel-card log-card">
+				<div class="card-head">
+					<h2>Activity</h2>
+					<span class="log-hint">Latest events appear first.</span>
+				</div>
+				<pre id="status-log" class="status" aria-live="polite"></pre>
 			</div>
-			<pre id="status-log" class="status" aria-live="polite"></pre>
 		</section>
 	</main>
 
@@ -187,7 +197,7 @@
 				Create GitHub token
 			</a>
 			<a
-				href="https://github.com/download-directory/download-directory.github.io"
+				href="https://github.com/Eliahhango/Directory-Downloader"
 				target="_blank"
 				rel="noreferrer"
 			>
