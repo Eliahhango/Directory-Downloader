@@ -1,6 +1,39 @@
 :root {
 	--font-body: 'Space Grotesk', 'Segoe UI', sans-serif;
 	--font-mono: 'IBM Plex Mono', Consolas, monospace;
+	--bg: #f5f8ff;
+	--bg-alt: #e9f1ff;
+	--shape: rgb(18 114 255 / 12%);
+	--surface: rgb(255 255 255 / 95%);
+	--surface-strong: #ffffff;
+	--text: #0f1a2b;
+	--muted: #5f6b7c;
+	--accent: #2f6bff;
+	--accent-strong: #1c4fd1;
+	--border: rgb(36 86 180 / 16%);
+	--danger: #d94b4b;
+	--shadow: 0 18px 40px rgb(13 35 80 / 12%);
+	--ring: 0 0 0 3px rgb(47 107 255 / 20%);
+	--radius: 14px;
+	color-scheme: light;
+}
+
+:root[data-theme='elite'] {
+	--bg: #f5f8ff;
+	--bg-alt: #e9f1ff;
+	--shape: rgb(18 114 255 / 12%);
+	--surface: rgb(255 255 255 / 95%);
+	--surface-strong: #ffffff;
+	--text: #0f1a2b;
+	--muted: #5f6b7c;
+	--accent: #2f6bff;
+	--accent-strong: #1c4fd1;
+	--border: rgb(36 86 180 / 16%);
+	--ring: 0 0 0 3px rgb(47 107 255 / 20%);
+	color-scheme: light;
+}
+
+:root[data-theme='forest'] {
 	--bg: #081c12;
 	--bg-alt: #123a2a;
 	--shape: rgb(136 255 171 / 28%);
@@ -11,10 +44,7 @@
 	--accent: #62ffa6;
 	--accent-strong: #12ad65;
 	--border: rgb(152 250 186 / 35%);
-	--danger: #ff7979;
-	--shadow: 0 18px 45px rgb(0 0 0 / 30%);
 	--ring: 0 0 0 3px rgb(98 255 166 / 28%);
-	--radius: 18px;
 	color-scheme: dark;
 }
 
@@ -30,6 +60,7 @@
 	--accent-strong: #168fcd;
 	--border: rgb(116 215 255 / 30%);
 	--ring: 0 0 0 3px rgb(116 215 255 / 28%);
+	color-scheme: dark;
 }
 
 :root[data-theme='sunset'] {
@@ -44,6 +75,7 @@
 	--accent-strong: #e06a2b;
 	--border: rgb(255 183 111 / 30%);
 	--ring: 0 0 0 3px rgb(255 177 89 / 28%);
+	color-scheme: dark;
 }
 
 * {
@@ -51,7 +83,7 @@
 }
 
 ::selection {
-	background: rgb(255 255 255 / 25%);
+	background: rgb(47 107 255 / 22%);
 }
 
 html,
@@ -65,10 +97,24 @@ body {
 	font: 500 1rem/1.6 var(--font-body);
 	color: var(--text);
 	background:
-		radial-gradient(circle at 10% 0%, var(--bg-alt), transparent 45%),
-		radial-gradient(circle at 95% 80%, var(--bg-alt), transparent 40%),
-		linear-gradient(160deg, var(--bg), #000 80%);
+		radial-gradient(circle at 12% 0%, var(--bg-alt), transparent 45%),
+		radial-gradient(circle at 90% 80%, rgb(47 107 255 / 10%), transparent 42%),
+		linear-gradient(160deg, #ffffff, var(--bg) 60%);
 	position: relative;
+}
+
+body::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background:
+		linear-gradient(120deg, rgb(47 107 255 / 10%), transparent 30%),
+		linear-gradient(90deg, rgb(15 46 120 / 6%) 1px, transparent 1px),
+		linear-gradient(180deg, rgb(15 46 120 / 6%) 1px, transparent 1px);
+	background-size: auto, 120px 120px, 120px 120px;
+	opacity: 0.5;
 }
 
 a {
@@ -105,17 +151,17 @@ code,
 }
 
 .shape-a {
-	height: 220px;
-	width: 220px;
-	top: -40px;
-	right: -30px;
+	height: 260px;
+	width: 260px;
+	top: -80px;
+	right: -60px;
 }
 
 .shape-b {
-	height: 280px;
-	width: 280px;
-	bottom: -90px;
-	left: -80px;
+	height: 340px;
+	width: 340px;
+	bottom: -140px;
+	left: -120px;
 }
 
 .card {
@@ -125,7 +171,7 @@ code,
 	border: 1px solid var(--border);
 	border-radius: var(--radius);
 	box-shadow: var(--shadow);
-	backdrop-filter: blur(10px);
+	backdrop-filter: blur(8px);
 }
 
 .site-header,
@@ -141,6 +187,7 @@ code,
 	align-items: center;
 	padding: 18px;
 	margin-bottom: 18px;
+	border-top: 3px solid var(--accent);
 }
 
 .brand {
@@ -152,7 +199,7 @@ code,
 .brand-logo {
 	width: 46px;
 	height: 46px;
-	filter: drop-shadow(0 0 16px rgb(255 255 255 / 20%));
+	filter: drop-shadow(0 0 10px rgb(47 107 255 / 25%));
 }
 
 .brand h1 {
@@ -242,10 +289,11 @@ select {
 	color: var(--text);
 	outline: none;
 	transition: border-color 180ms ease, box-shadow 180ms ease;
+	box-shadow: inset 0 0 0 1px rgb(255 255 255 / 70%);
 }
 
 input::placeholder {
-	color: color-mix(in srgb, var(--muted) 65%, transparent);
+	color: var(--muted);
 }
 
 input:focus,
@@ -256,7 +304,7 @@ select:focus {
 
 button {
 	padding: 11px 14px;
-	border-radius: 12px;
+	border-radius: 10px;
 	border: 1px solid var(--border);
 	background: transparent;
 	color: var(--text);
@@ -266,7 +314,7 @@ button {
 
 button:hover {
 	transform: translateY(-1px);
-	background: rgb(255 255 255 / 10%);
+	background: rgb(47 107 255 / 8%);
 }
 
 button:disabled {
@@ -278,13 +326,13 @@ button:disabled {
 #start-button {
 	background: linear-gradient(135deg, var(--accent), var(--accent-strong));
 	border-color: transparent;
-	color: #04180f;
+	color: #ffffff;
 	font-weight: 700;
 }
 
 #cancel-button {
 	border-color: rgb(255 121 121 / 50%);
-	color: color-mix(in srgb, var(--text) 80%, var(--danger));
+	color: var(--danger);
 }
 
 .actions {
@@ -296,14 +344,14 @@ button:disabled {
 #token-panel {
 	padding: 10px 12px;
 	border: 1px solid var(--border);
-	border-radius: 12px;
-	background: rgb(255 255 255 / 4%);
+	border-radius: 10px;
+	background: rgb(47 107 255 / 4%);
 	display: grid;
 	gap: 12px;
 }
 
 #token-panel[open] {
-	background: rgb(255 255 255 / 7%);
+	background: rgb(47 107 255 / 6%);
 }
 
 .hint {
@@ -332,7 +380,7 @@ button:disabled {
 .stats article {
 	padding: 10px;
 	border-radius: 12px;
-	background: rgb(255 255 255 / 5%);
+	background: rgb(47 107 255 / 6%);
 	border: 1px solid var(--border);
 	display: grid;
 	gap: 2px;
@@ -358,13 +406,13 @@ progress {
 	height: 10px;
 	appearance: none;
 	border: none;
-	background: rgb(255 255 255 / 12%);
+	background: rgb(47 107 255 / 12%);
 	border-radius: 20px;
 	overflow: hidden;
 }
 
 progress::-webkit-progress-bar {
-	background: rgb(255 255 255 / 12%);
+	background: rgb(47 107 255 / 12%);
 }
 
 progress::-webkit-progress-value {
@@ -423,9 +471,9 @@ progress::-moz-progress-bar {
 .status {
 	margin: 0;
 	padding: 10px;
-	border-radius: 12px;
+	border-radius: 10px;
 	border: 1px solid var(--border);
-	background: rgb(0 0 0 / 22%);
+	background: rgb(47 107 255 / 6%);
 	overflow: auto;
 	min-height: 180px;
 	font-size: 0.83rem;

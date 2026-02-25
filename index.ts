@@ -15,7 +15,7 @@ import getRepositoryInfo from './repository-info.js';
 type ApiOptions = ListGithubDirectoryOptions & {getFullData: true};
 type RepoFile = TreeResponseObject | ContentsReponseObject;
 
-type Theme = 'forest' | 'ocean' | 'sunset';
+type Theme = 'elite' | 'forest' | 'ocean' | 'sunset';
 
 const sampleUrl = 'https://github.com/mrdoob/three.js/tree/dev/build';
 const blockedWords = /malware|virus|trojan/i;
@@ -301,10 +301,10 @@ function applyTheme(theme: Theme) {
 
 function parseTheme() {
 	const stored = localStorage.getItem(themeStorageKey);
-	if (stored === 'forest' || stored === 'ocean' || stored === 'sunset') {
+	if (stored === 'elite' || stored === 'forest' || stored === 'ocean' || stored === 'sunset') {
 		applyTheme(stored);
 	} else {
-		applyTheme('forest');
+		applyTheme('elite');
 	}
 
 	ui.themeSelect.addEventListener('change', () => {
