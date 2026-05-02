@@ -38,12 +38,12 @@
 		"p-map": "^7.0.2",
 		"p-retry": "^6.2.0",
 		"framer-motion": "^11.2.10",
-		"react": "^18.3.1",
+		"react": "^19.2.5",
 		"react-dom": "^18.3.1"
 	},
 	"devDependencies": {
 		"@sindresorhus/tsconfig": "^6.0.0",
-		"@types/react": "^18.3.3",
+		"@types/react": "^19.2.14",
 		"@types/react-dom": "^18.3.0",
 		"buffer": "^6.0.3",
 		"eslint-plugin-n": "^17.13.2",
