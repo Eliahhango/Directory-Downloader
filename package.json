@@ -52,7 +52,7 @@
 		"parcel-reporter-static-files-copy": "^1.5.3",
 		"parcel-resolver-ignore": "^2.2.0",
 		"process": "^0.11.10",
-		"typed-query-selector": "^2.11.2",
+		"typed-query-selector": "^2.12.2",
 		"typescript": "^5.5.3",
 		"vitest": "^2.0.2",
 		"xo": "^0.58.0"
