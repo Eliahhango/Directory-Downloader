@@ -55,7 +55,7 @@
 		"typed-query-selector": "^2.11.2",
 		"typescript": "^5.5.3",
 		"vitest": "^2.0.2",
-		"xo": "^0.58.0"
+		"xo": "^2.0.2"
 	},
 	"parcelIgnore": [
 		"/\\?url"
